@@ -1,0 +1,6 @@
+make a ui
+add user prefs and help in seperate folder
+make all modules independent
+make a list to store todo
+learn nltk
+get weather, feed, coding competitions feed

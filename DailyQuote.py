@@ -2,7 +2,7 @@ from datetime import datetime
 
 def get_quote() :
 	date = str(datetime.now().date())
-	quotes = open("quotes.txt",'r')
+	quotes = open("quotes.txt",'r',encoding="ISO-8859-1")
 	line = quotes.readline()
 	while line is not "":
 		if line.split(' ', 1)[0] == date:

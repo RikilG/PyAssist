@@ -1,7 +1,7 @@
 import csv
 
 # help commands stored in help_commands.json file
-
+# this is incomplete
 def helper(query) :
 	try : 
 		tmp = query[1].split()

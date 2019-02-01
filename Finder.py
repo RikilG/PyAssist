@@ -5,12 +5,18 @@ This module requires Everything search and es.exe commandline utility installed 
 # use subprocess.call().
 """
 
-def find(queryStr):
-    subprocess.call('Everything.exe -search ' + '"'+queryStr+'"')
+def find(queryStr, platform):
+    if platform == 'linux':
+        proc = subprocess.Popen(['mlocate',queryStr])
+    elif platform == 'windows':
+        subprocess.call('Everything.exe -search ' + '"'+queryStr+'"')
 
-def open(queryStr):
+def open(queryStr, platform):
     # use command line es.exe and pipe(using '>' operator in command) output to a list. then open accordingly.
-    proc = subprocess.Popen(['es.exe','-r',queryStr],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    if platform == 'linux':
+        proc = subprocess.Popen(['mlocate',queryStr],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    elif platform == 'windows':
+        proc = subprocess.Popen(['es.exe','-r',queryStr],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     out = list(proc.stdout)
     out = [str(o.decode("utf-8")) for o in out]
     out = [o.rstrip('\r\n') for o in out]
@@ -42,9 +48,12 @@ def open(queryStr):
             print("Invalid option.")
 
 
-def run(queryStr):
+def run(queryStr,platform):
     try:
-        subprocess.call('start '+queryStr)
+        if platform!='linux':
+            subprocess.call('start '+queryStr)
+        else:
+            print("linux opening applications is not yet supported!.")
     except Exception:
         print('You did not specify what to open!!')
 

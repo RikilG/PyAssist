@@ -1,15 +1,24 @@
 # from multiprocessing import Process
 from sys import exit as exitPyassist
+from sys import platform
 import webbrowser
 
 import Help
 import Music
+import Banner
 import Finder
-import download
 import DailyQuote
 import BingWallpaper
 
-print('\n>>>Welcome to PyAssist<<\n')
+plat = None
+if platform.startswith('linux'):
+	plat = 'linux'
+elif platform.startswith('win'):
+	plat = 'windows'
+
+print('\n>>>Welcome to PyAssist<<')
+if plat == 'linux':
+	Banner.showBanner()
 print('type "bye" to exit or "help" to print list of commands')
 DailyQuote.get_quote()
 
@@ -21,8 +30,8 @@ while(True):
 		print('Have a nice Day :)')
 		exitPyassist()
 		
-	elif query[0] == 'help':
-		Help.helper(query)
+	#elif query[0] == 'help':
+	#	Help.helper(query)
 	
 	elif query[0] == 'g' or query[0] == 'google':
 		if len(query)>1:
@@ -37,26 +46,23 @@ while(True):
 			webbrowser.open('http://www.duckduckgo.com/')
 
 	elif query[0] == 'find':
-		Finder.find(query[1])
+		Finder.find(query[1],plat)
 		
 	elif 'run' == query[0] or 'start' == query[0]:
-		Finder.run(query[1])
+		Finder.run(query[1],plat)
 	
 	elif query[0] == 'open':
-		Finder.open(query[1])
+		Finder.open(query[1],plat)
 		# pass
 	
 	elif 'music' in query or 'songs' in query or 'song' in query : 
-		Music.run_query(query)
-	
-	elif 'download' == query[0]:
-		download.download(query)
+		Music.run_query(query,plat)
 	
 	# elif 'login' in query:
 	#	subprocess.call("%USERPROFILE%\Documents\MyCyberoam.py",shell=True)
 
 	elif 'change'==query[0] and 'wallpaper' in query[1].lower():
-		BingWallpaper.get_Wallpaper()
+		BingWallpaper.get_Wallpaper(plat)
 	
 	else:
 		print('Unrecognized command. please consider improving me.')

@@ -1,7 +1,9 @@
 *.jpg
 *.png
 *.txt
+*.swp
 *.pyc
 *.*~
 *~
+OAUTH-2-token
 

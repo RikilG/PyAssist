@@ -13,7 +13,7 @@ def get_quote() :
 		line = quotes.readline()
 	quotes.close()
 	
-	print("Getting todays quote. press Ctrl+c to cancel...")
+	print("Getting today's quote. press Ctrl+c to cancel...")
 	import requests
 	from bs4 import BeautifulSoup
 	try:

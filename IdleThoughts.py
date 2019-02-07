@@ -9,16 +9,19 @@ from dropbox.exceptions import ApiError, AuthError
 def selectOption():
     syncDB()
     print("What do you want to do?")
-    print("1:add idea(default)")
-    print("2:delete idea")
+    print("1:add idea")
+    print("2:show ideas(default)")
+    print("3:delete idea")
     print("0:quit")
     option = int(input("Enter your option here : "))
     if(option == 1):
         addIdea()
+    elif(option == 3):
+        deleteIdea()
     elif(option == 0):
         return
     else:
-        deleteIdea()
+        showIdeas()
 
 def addIdea():
     idea = input("Enter idea here : ")
@@ -27,24 +30,43 @@ def addIdea():
     syncDB()
 
 def deleteIdea():
-    print("delete idea under development")
+    print("Select idea no to be deleted")
+    showIdeas()
+    with open("IdleThoughts/thoughts.txt",'r') as file:
+        ideas = file.readlines()
+    x = int(input("Select idea no to be deleted : ")) - 1
+    if x>=len(ideas):
+        print("improper line index given")
+        return
+    del ideas[x]
+    with open("IdleThoughts/thoughts.txt",'w') as file:
+        for idea in ideas:
+            file.write(idea)
+    syncDB()
 
 def syncDB():
-    server_modified = dbx.files_list_folder("").entries[0].server_modified
     try:
-        mtime = os.path.getmtime("IdleThoughts/thoughts.txt")
+        server_modified = dbx.files_list_folder("").entries[0].server_modified
+        try:
+            mtime = os.path.getmtime("IdleThoughts/thoughts.txt")
+        except OSError:
+            mtime = 0
+        local_modified = datetime.fromtimestamp(mtime)
+        server_modified = server_modified.replace(tzinfo=timezone.utc).astimezone(tz=None).replace(tzinfo=None)
+        #print("server modified " + str(server_modified))
+        #print("local modified " + str(local_modified))
+        if(server_modified > local_modified):
+            print("download latest from server")
+            download()
+        else:
+            print("Performing DropBox Sync")
+            upload()
+    except dropbox.exceptions.HttpError as err:
+        print(err)
+    except ApiError as err:
+        print(err)
     except OSError:
-        mtime = 0
-    local_modified = datetime.fromtimestamp(mtime)
-    server_modified = server_modified.replace(tzinfo=timezone.utc).astimezone(tz=None).replace(tzinfo=None)
-    #print("server modified " + str(server_modified))
-    #print("local modified " + str(local_modified))
-    if(server_modified > local_modified):
-        print("download latest from server")
-        download()
-    else:
-        print("uploading latest to server")
-        upload()
+        print("OSErr : User offline. Changes are made locally")
 
 def upload():
     with open("IdleThoughts/thoughts.txt",'rb') as f:
@@ -60,6 +82,7 @@ def upload():
                 print(str(err))
 
 def download():
+    flag=0
     print("downloading thoughts.txt from dropbox...")
     try:
         # md is metadata of file
@@ -68,10 +91,23 @@ def download():
         print('*** HTTP error', err)
         return None
     data = res.content
-    print('downloaded ',len(data), 'bytes; md:', md)
-    with open("IdleThoughts/thoughts.txt",'wb') as f:
+    print('downloaded ',len(data), 'bytes;')
+    with open("IdleThoughts/thoughts.txt",'rb') as f:
         if(data != f.read()):
-            f.write(data)
+            flag = 1
+    if(flag == 1):
+        with open("IdleThoughts/thoughts.txt",'wb') as f:
+                f.write(data)
+
+def showIdeas():
+    lineno = 1
+    with open("IdleThoughts/thoughts.txt",'r') as file:
+        ideas = file.readlines()
+    print("\nStored Thoughts : ")
+    for idea in ideas:
+        print(' ' + str(lineno) + ' : ' + idea,end='')
+        lineno += 1
+    print()
 
 if __name__ == '__main__':
     # Please input yout oauth 2 token here or from file

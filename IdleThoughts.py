@@ -5,6 +5,19 @@ import dropbox
 from dropbox.files import WriteMode
 from dropbox.exceptions import ApiError, AuthError
 
+with open("IdleThoughts/OAUTH-2-token",'r') as tokenfile:
+    TOKEN = tokenfile.readline().strip()
+dbx = dropbox.Dropbox(TOKEN)
+
+def run_query(query):
+    if 'add' in query:
+        addIdea()
+    elif 'remove' in query or 'delete' in query or 'del' in query:
+        deleteIdea()
+    elif 'show' in query or 'view' in query:
+        showIdeas()
+    else:
+        selectOption()
 
 def selectOption():
     syncDB()
@@ -111,8 +124,4 @@ def showIdeas():
 
 if __name__ == '__main__':
     # Please input yout oauth 2 token here or from file
-    TOKEN = None
-    with open("IdleThoughts/OAUTH-2-token",'r') as tokenfile:
-        TOKEN = tokenfile.readline().strip()
-    dbx = dropbox.Dropbox(TOKEN)
     selectOption()

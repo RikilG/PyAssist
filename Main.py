@@ -1,6 +1,7 @@
 # from multiprocessing import Process
 from sys import exit as exitPyassist
 from sys import platform
+import os
 import webbrowser
 
 import Help
@@ -9,6 +10,7 @@ import Banner
 import Finder
 import DailyQuote
 import BingWallpaper
+import IdleThoughts
 
 plat = None
 if platform.startswith('linux'):
@@ -32,6 +34,9 @@ while(True):
 		
 	#elif query[0] == 'help':
 	#	Help.helper(query)
+
+	elif query[0] == 'clear':
+		os.system('clear')
 	
 	elif query[0] == 'g' or query[0] == 'google':
 		if len(query)>1:
@@ -63,6 +68,9 @@ while(True):
 
 	elif 'change'==query[0] and 'wallpaper' in query[1].lower():
 		BingWallpaper.get_Wallpaper(plat)
+	
+	elif ('what'in query and 'do' in query) or 'ideas' in query or 'thoughts' in query or 'idea' in query or 'thought' in query:
+		IdleThoughts.run_query(query)
 	
 	else:
 		print('Unrecognized command. please consider improving me.')
